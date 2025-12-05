@@ -1,314 +1,393 @@
-import React, { useState } from 'react';
-import { ChevronLeft, Check, ShoppingBag, DollarSign, User, Phone, Mail } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TikTok Shop</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-export default function App() {
-  // States: 'checklist', 'reviewing', 'loading_screen', 'success', 'configuration'
-  const [currentStep, setCurrentStep] = useState('checklist');
-  const [isChecked, setIsChecked] = useState(true);
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  // Configuration form state
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: ''
-  });
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  // Placeholder banner image
-  const bannerImage = "https://i.postimg.cc/QtjNZrdH/images.jpg";
-
-  const handleApply = () => {
-    // 1. Show "Reviewing" modal
-    setCurrentStep('reviewing');
-
-    // 2. Transition to loading screen after 1.5s
-    setTimeout(() => {
-      setCurrentStep('loading_screen');
-    }, 1500);
-
-    // 3. Show success screen after another 2s
-    setTimeout(() => {
-      setCurrentStep('success');
-    }, 3500);
-  };
-
-  const handleStartConfiguration = () => {
-    setCurrentStep('configuration');
-  };
-
-  const handleConfigSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form Submitted:", formData);
-    setCurrentStep('success'); // Just for demo loop
-    alert(`Configuration Submitted for ${formData.name}!`);
-  };
-
-  // Custom Icon for the Success Page (Party Popper style matching the screenshot)
-  const SuccessIcon = () => (
-    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6">
-      {/* Confetti Squiggles */}
-      <path d="M80 30C80 30 85 25 82 20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M40 25C40 25 35 20 38 15" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M90 70C90 70 95 75 92 80" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M30 40L35 35" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-      
-      {/* Teal Star */}
-      <path d="M85 45L88 55L98 55L90 62L93 72L85 65L77 72L80 62L72 55L82 55L85 45Z" fill="#25F4EE"/>
-      
-      {/* Small White Star/Sparkle */}
-      <path d="M45 30L47 35L52 35L48 39L49 44L45 40L41 44L42 39L38 35L43 35L45 30Z" fill="white"/>
-      
-      {/* Pink Cone Body */}
-      <path d="M35 85L85 65L60 25L35 85Z" fill="#FE2C55"/>
-      <path d="M35 85L60 25L50 80L35 85Z" fill="#D91F45"/> {/* Shading */}
-      
-      {/* Cone Lines */}
-      <path d="M45 70L75 50" stroke="white" strokeWidth="2"/>
-      <path d="M40 50L60 35" stroke="white" strokeWidth="2"/>
-      
-      {/* Circle */}
-      <circle cx="100" cy="80" r="3" stroke="white" strokeWidth="2"/>
-      <circle cx="95" cy="35" r="2" fill="white"/>
-    </svg>
-  );
-
-  return (
-    <div className="min-h-screen bg-black text-white flex flex-col font-sans w-full overflow-hidden relative">
-      
-      {/* Custom Styles for Animation */}
-      <style>{`
+        /* Animations */
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-          animation: fadeIn 0.5s ease-out forwards;
+            animation: fadeIn 0.5s ease-out forwards;
         }
-      `}</style>
 
-      {/* Navigation Header */}
-      <div className="flex items-center px-4 py-3 border-b border-gray-800 shrink-0 sticky top-0 bg-black z-10 safe-area-top">
-        <button 
-          onClick={() => {
-            if(currentStep === 'configuration') setCurrentStep('success');
-            else if(currentStep === 'success') setCurrentStep('checklist');
-            else if(currentStep === 'checklist') {} // No action
-          }}
-          className={`p-1 -ml-2 rounded-full hover:bg-gray-900 transition-colors ${currentStep === 'checklist' ? 'opacity-0 pointer-events-none' : ''}`}
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-custom {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Hide Scrollbar */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Safe Area for Mobile */
+        .safe-area-top {
+            padding-top: env(safe-area-inset-top);
+        }
+
+        /* Checkbox transition */
+        .checkbox-transition {
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col w-full overflow-hidden relative">
+
+    <!-- NAVIGATION HEADER -->
+    <div class="flex items-center px-4 py-3 border-b border-gray-800 shrink-0 sticky top-0 bg-black z-10 safe-area-top">
+        <button id="back-btn" class="p-1 -ml-2 rounded-full hover:bg-gray-900 transition-colors opacity-0 pointer-events-none">
+            <i data-lucide="chevron-left" class="w-6 h-6 text-white"></i>
         </button>
-        <h1 className="flex-1 text-center text-[17px] font-semibold text-white pr-4">
-          {currentStep === 'configuration' ? 'Configuration' : 'TikTok Shop'}
+        <h1 id="header-title" class="flex-1 text-center text-[17px] font-semibold text-white pr-4">
+            TikTok Shop
         </h1>
-      </div>
+    </div>
 
-      {/* MAIN CONTENT AREA */}
-      <div className="flex-1 overflow-y-auto relative flex flex-col scrollbar-hide">
+    <!-- MAIN CONTENT AREA -->
+    <div id="main-container" class="flex-1 overflow-y-auto relative flex flex-col scrollbar-hide">
         
-        {/* STEP 1: CHECKLIST SCREEN */}
-        {(currentStep === 'checklist' || currentStep === 'reviewing') && (
-          <div className="p-6 flex flex-col min-h-full animate-fade-in w-full max-w-2xl mx-auto">
+        <!-- SCREEN 1: CHECKLIST -->
+        <div id="screen-checklist" class="p-6 flex flex-col min-h-full animate-fade-in w-full max-w-2xl mx-auto">
             
-            {/* Header Image - Full width, no gradient, no text overlay */}
-            <div className="mb-6 -mx-6 mt-[-24px]">
-               <img 
-                src={bannerImage} 
-                alt="TikTok Shop Banner" 
-                className="w-full h-auto block"
-              />
+            <!-- Banner Image -->
+            <div class="mb-6 -mx-6 mt-[-24px]">
+                <img src="https://i.postimg.cc/QtjNZrdH/images.jpg" alt="TikTok Shop Banner" class="w-full h-auto block">
             </div>
 
-            <div className="mb-6">
-               <h2 className="text-2xl font-bold text-white mb-2 leading-tight">
-                Start Your Shop
-               </h2>
-              <h3 className="text-[18px] font-semibold text-gray-200 mb-2 leading-tight">
-                You are eligible to apply!
-              </h3>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2 leading-tight">Start Your Shop</h2>
+                <h3 class="text-[18px] font-semibold text-gray-200 mb-2 leading-tight">You are eligible to apply!</h3>
             </div>
 
-            {/* Requirements List */}
-            <div className="space-y-5 mb-8">
-              <RequirementItem text="Meet our Community Guidelines" />
-              <RequirementItem text="Have over 2000 followers" />
-              <RequirementItem text="Be at least 18 years old" />
-              <RequirementItem text="Posted a video on TikTok in the last 180 days" />
-            </div>
-
-            <div className="mt-auto">
-              {/* Terms Checkbox Area */}
-              <div className="flex items-start gap-3 mb-6">
-                <div 
-                  onClick={() => setIsChecked(!isChecked)}
-                  className={`mt-0.5 min-w-[20px] h-[20px] rounded-full border flex items-center justify-center cursor-pointer transition-colors ${isChecked ? 'bg-[#FE2C55] border-[#FE2C55]' : 'border-gray-600'}`}
-                >
-                  {isChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+            <!-- Requirements List -->
+            <div class="space-y-5 mb-8">
+                <!-- Item 1 -->
+                <div class="flex items-start gap-3 group cursor-default">
+                    <div class="min-w-[20px] h-[20px] mt-0.5 bg-[#1C2C24] border border-[#00C250]/20 rounded-full flex items-center justify-center">
+                        <i data-lucide="check" class="w-3 h-3 text-[#00C250]" stroke-width="4"></i>
+                    </div>
+                    <span class="text-[15px] text-gray-200 font-normal leading-snug">Meet our Community Guidelines</span>
                 </div>
-                <p className="text-[12px] text-gray-400 leading-snug select-none" onClick={() => setIsChecked(!isChecked)}>
-                  By continuing, you agree to the TikTok Shop Creator Terms of Use and Privacy Policy.
-                </p>
-              </div>
-
-              {/* Apply Button */}
-              <button
-                onClick={handleApply}
-                disabled={!isChecked}
-                className={`w-full py-3.5 rounded-sm text-white font-semibold text-[15px] transition-all active:scale-[0.98] ${isChecked ? 'bg-[#FE2C55] hover:opacity-90 shadow-[0_0_15px_rgba(254,44,85,0.3)]' : 'bg-gray-800 cursor-not-allowed text-gray-500'}`}
-              >
-                Apply
-              </button>
-            </div>
-
-            {/* REVIEWING MODAL OVERLAY */}
-            {currentStep === 'reviewing' && (
-              <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center backdrop-blur-sm">
-                <div className="bg-[#1f1f1f] text-white px-8 py-6 rounded-xl flex flex-col items-center shadow-2xl border border-gray-800 transform scale-100 animate-fade-in">
-                  {/* TikTok style dual-color spinner */}
-                  <div className="relative w-10 h-10 mb-4 animate-spin">
-                    <div className="absolute top-0 left-0 w-4 h-4 bg-[#25F4EE] rounded-full opacity-80 blur-[2px]"></div>
-                    <div className="absolute bottom-0 right-0 w-4 h-4 bg-[#FE2C55] rounded-full opacity-80 blur-[2px]"></div>
-                  </div>
-                  <span className="text-sm font-semibold tracking-wide">Reviewing...</span>
+                <!-- Item 2 -->
+                <div class="flex items-start gap-3 group cursor-default">
+                    <div class="min-w-[20px] h-[20px] mt-0.5 bg-[#1C2C24] border border-[#00C250]/20 rounded-full flex items-center justify-center">
+                        <i data-lucide="check" class="w-3 h-3 text-[#00C250]" stroke-width="4"></i>
+                    </div>
+                    <span class="text-[15px] text-gray-200 font-normal leading-snug">Have over 2000 followers</span>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* STEP 2: FULL SCREEN LOADING */}
-        {currentStep === 'loading_screen' && (
-          <div className="flex flex-col items-center justify-center flex-1 bg-black h-full animate-fade-in">
-            <div className="relative w-12 h-12 animate-spin">
-               <div className="absolute top-0 left-0 w-5 h-5 bg-[#25F4EE] rounded-full mix-blend-screen blur-[1px]"></div>
-               <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#FE2C55] rounded-full mix-blend-screen blur-[1px]"></div>
-            </div>
-            <p className="mt-6 text-gray-500 text-sm font-medium animate-pulse">Finalizing setup...</p>
-          </div>
-        )}
-
-        {/* STEP 3: SUCCESS SCREEN (UPDATED to match screenshot) */}
-        {currentStep === 'success' && (
-          <div className="flex flex-col flex-1 bg-black p-6 pt-32 animate-fade-in w-full max-w-2xl mx-auto">
-            <div className="flex flex-col items-center text-center">
-              
-              <SuccessIcon />
-
-              <h2 className="text-[22px] font-bold text-white mb-3 leading-tight">
-                Congratulations! You can now <br/> sell and earn.
-              </h2>
-              
-              <p className="text-gray-400 text-[14px] px-2 leading-snug">
-                Your application was approved. Start earning by selling TikTok Affiliate products!
-              </p>
-            </div>
-
-            <div className="mt-auto pb-8 w-full">
-              <button 
-                className="w-full py-3.5 bg-[#FE2C55] rounded-[4px] text-white font-semibold text-[15px] hover:opacity-90 active:scale-[0.98] transition-all"
-                onClick={handleStartConfiguration}
-              >
-                Start earning
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: CONFIGURATION FORM */}
-        {currentStep === 'configuration' && (
-          <div className="p-6 flex-1 flex flex-col bg-black animate-fade-in w-full max-w-2xl mx-auto">
-            <div className="mb-8 text-center pt-4">
-               <div className="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-800">
-                  <User className="w-10 h-10 text-gray-400" />
-               </div>
-               <h2 className="text-xl font-bold text-white mb-2">Shop Details</h2>
-               <p className="text-gray-400 text-sm">
-                 Please fill in your details to complete the setup.
-               </p>
-            </div>
-
-            <form onSubmit={handleConfigSubmit} className="space-y-5">
-              
-              {/* Name Input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Full Name</label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-500 group-focus-within:text-[#FE2C55] transition-colors" />
-                  </div>
-                  <input
-                    type="text"
-                    required
-                    className="block w-full pl-10 pr-3 py-3.5 bg-gray-900 border border-gray-800 rounded-lg focus:ring-1 focus:ring-[#FE2C55] focus:border-[#FE2C55] transition-all outline-none text-[15px] text-white placeholder-gray-600"
-                    placeholder="Enter your full name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  />
+                <!-- Item 3 -->
+                <div class="flex items-start gap-3 group cursor-default">
+                    <div class="min-w-[20px] h-[20px] mt-0.5 bg-[#1C2C24] border border-[#00C250]/20 rounded-full flex items-center justify-center">
+                        <i data-lucide="check" class="w-3 h-3 text-[#00C250]" stroke-width="4"></i>
+                    </div>
+                    <span class="text-[15px] text-gray-200 font-normal leading-snug">Be at least 18 years old</span>
                 </div>
-              </div>
-
-              {/* Phone Input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Phone Number</label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone className="h-5 w-5 text-gray-500 group-focus-within:text-[#FE2C55] transition-colors" />
-                  </div>
-                  <input
-                    type="tel"
-                    required
-                    className="block w-full pl-10 pr-3 py-3.5 bg-gray-900 border border-gray-800 rounded-lg focus:ring-1 focus:ring-[#FE2C55] focus:border-[#FE2C55] transition-all outline-none text-[15px] text-white placeholder-gray-600"
-                    placeholder="+1 (555) 000-0000"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  />
+                <!-- Item 4 -->
+                <div class="flex items-start gap-3 group cursor-default">
+                    <div class="min-w-[20px] h-[20px] mt-0.5 bg-[#1C2C24] border border-[#00C250]/20 rounded-full flex items-center justify-center">
+                        <i data-lucide="check" class="w-3 h-3 text-[#00C250]" stroke-width="4"></i>
+                    </div>
+                    <span class="text-[15px] text-gray-200 font-normal leading-snug">Posted a video on TikTok in the last 180 days</span>
                 </div>
-              </div>
+            </div>
 
-               {/* Email/Additional Info Input */}
-               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Email Address</label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-500 group-focus-within:text-[#FE2C55] transition-colors" />
-                  </div>
-                  <input
-                    type="email"
-                    required
-                    className="block w-full pl-10 pr-3 py-3.5 bg-gray-900 border border-gray-800 rounded-lg focus:ring-1 focus:ring-[#FE2C55] focus:border-[#FE2C55] transition-all outline-none text-[15px] text-white placeholder-gray-600"
-                    placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  />
+            <div class="mt-auto">
+                <!-- Terms Checkbox -->
+                <div class="flex items-start gap-3 mb-6 cursor-pointer" id="terms-container">
+                    <div id="terms-checkbox" class="mt-0.5 min-w-[20px] h-[20px] rounded-full border border-[#FE2C55] bg-[#FE2C55] flex items-center justify-center transition-colors checkbox-transition">
+                        <i id="check-icon" data-lucide="check" class="w-3.5 h-3.5 text-white" stroke-width="3"></i>
+                    </div>
+                    <p class="text-[12px] text-gray-400 leading-snug select-none">
+                        By continuing, you agree to the TikTok Shop Creator Terms of Use and Privacy Policy.
+                    </p>
                 </div>
-              </div>
 
-              <div className="pt-6">
-                <button
-                  type="submit"
-                  className="w-full py-3.5 bg-[#FE2C55] rounded-sm text-white font-semibold text-[15px] hover:opacity-90 shadow-lg shadow-red-900/20 active:scale-[0.98] transition-transform"
-                >
-                  Complete Setup
+                <!-- Apply Button -->
+                <button id="apply-btn" class="w-full py-3.5 rounded-sm text-white font-semibold text-[15px] transition-all active:scale-[0.98] bg-[#FE2C55] hover:opacity-90 shadow-[0_0_15px_rgba(254,44,85,0.3)]">
+                    Apply
                 </button>
-              </div>
+            </div>
+        </div>
+
+        <!-- MODAL: REVIEWING (Overlay) -->
+        <div id="modal-reviewing" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center backdrop-blur-sm">
+            <div class="bg-[#1f1f1f] text-white px-8 py-6 rounded-xl flex flex-col items-center shadow-2xl border border-gray-800 animate-fade-in">
+                <!-- Dual Color Spinner -->
+                <div class="relative w-10 h-10 mb-4 animate-spin-custom">
+                    <div class="absolute top-0 left-0 w-4 h-4 bg-[#25F4EE] rounded-full opacity-80 blur-[2px]"></div>
+                    <div class="absolute bottom-0 right-0 w-4 h-4 bg-[#FE2C55] rounded-full opacity-80 blur-[2px]"></div>
+                </div>
+                <span class="text-sm font-semibold tracking-wide">Reviewing...</span>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: LOADING -->
+        <div id="screen-loading" class="hidden flex flex-col items-center justify-center flex-1 bg-black h-full animate-fade-in">
+            <div class="relative w-12 h-12 animate-spin-custom">
+                <div class="absolute top-0 left-0 w-5 h-5 bg-[#25F4EE] rounded-full mix-blend-screen blur-[1px]"></div>
+                <div class="absolute bottom-0 right-0 w-5 h-5 bg-[#FE2C55] rounded-full mix-blend-screen blur-[1px]"></div>
+            </div>
+            <p class="mt-6 text-gray-500 text-sm font-medium animate-pulse">Finalizing setup...</p>
+        </div>
+
+        <!-- SCREEN 3: SUCCESS -->
+        <div id="screen-success" class="hidden flex flex-col flex-1 bg-black p-6 pt-32 animate-fade-in w-full max-w-2xl mx-auto">
+            <div class="flex flex-col items-center text-center">
+                
+                <!-- Custom SVG Icon -->
+                <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-6">
+                    <path d="M80 30C80 30 85 25 82 20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M40 25C40 25 35 20 38 15" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M90 70C90 70 95 75 92 80" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M30 40L35 35" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M85 45L88 55L98 55L90 62L93 72L85 65L77 72L80 62L72 55L82 55L85 45Z" fill="#25F4EE"/>
+                    <path d="M45 30L47 35L52 35L48 39L49 44L45 40L41 44L42 39L38 35L43 35L45 30Z" fill="white"/>
+                    <path d="M35 85L85 65L60 25L35 85Z" fill="#FE2C55"/>
+                    <path d="M35 85L60 25L50 80L35 85Z" fill="#D91F45"/>
+                    <path d="M45 70L75 50" stroke="white" strokeWidth="2"/>
+                    <path d="M40 50L60 35" stroke="white" strokeWidth="2"/>
+                    <circle cx="100" cy="80" r="3" stroke="white" strokeWidth="2"/>
+                    <circle cx="95" cy="35" r="2" fill="white"/>
+                </svg>
+
+                <h2 class="text-[22px] font-bold text-white mb-3 leading-tight">
+                    Congratulations! You can now <br/> sell and earn.
+                </h2>
+                
+                <p class="text-gray-400 text-[14px] px-2 leading-snug">
+                    Your application was approved. Start earning by selling TikTok Affiliate products!
+                </p>
+            </div>
+
+            <div class="mt-auto pb-8 w-full">
+                <button id="start-earning-btn" class="w-full py-3.5 bg-[#FE2C55] rounded-[4px] text-white font-semibold text-[15px] hover:opacity-90 active:scale-[0.98] transition-all">
+                    Start earning
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: CONFIGURATION -->
+        <div id="screen-configuration" class="hidden p-6 flex-1 flex flex-col bg-black animate-fade-in w-full max-w-2xl mx-auto">
+            <div class="mb-8 text-center pt-4">
+                <div class="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-800">
+                    <i data-lucide="user" class="w-10 h-10 text-gray-400"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white mb-2">Shop Details</h2>
+                <p class="text-gray-400 text-sm">Please fill in your details to complete the setup.</p>
+            </div>
+
+            <form id="config-form" class="space-y-5">
+                <!-- Name -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Full Name</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="user" class="h-5 w-5 text-gray-500 group-focus-within:text-[#FE2C55] transition-colors"></i>
+                        </div>
+                        <input type="text" id="input-name" required class="block w-full pl-10 pr-3 py-3.5 bg-gray-900 border border-gray-800 rounded-lg focus:ring-1 focus:ring-[#FE2C55] focus:border-[#FE2C55] transition-all outline-none text-[15px] text-white placeholder-gray-600" placeholder="Enter your full name">
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Phone Number</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="phone" class="h-5 w-5 text-gray-500 group-focus-within:text-[#FE2C55] transition-colors"></i>
+                        </div>
+                        <input type="tel" id="input-phone" required class="block w-full pl-10 pr-3 py-3.5 bg-gray-900 border border-gray-800 rounded-lg focus:ring-1 focus:ring-[#FE2C55] focus:border-[#FE2C55] transition-all outline-none text-[15px] text-white placeholder-gray-600" placeholder="+1 (555) 000-0000">
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Email Address</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="mail" class="h-5 w-5 text-gray-500 group-focus-within:text-[#FE2C55] transition-colors"></i>
+                        </div>
+                        <input type="email" id="input-email" required class="block w-full pl-10 pr-3 py-3.5 bg-gray-900 border border-gray-800 rounded-lg focus:ring-1 focus:ring-[#FE2C55] focus:border-[#FE2C55] transition-all outline-none text-[15px] text-white placeholder-gray-600" placeholder="you@example.com">
+                    </div>
+                </div>
+
+                <div class="pt-6">
+                    <button type="submit" class="w-full py-3.5 bg-[#FE2C55] rounded-sm text-white font-semibold text-[15px] hover:opacity-90 shadow-lg shadow-red-900/20 active:scale-[0.98] transition-transform">
+                        Complete Setup
+                    </button>
+                </div>
             </form>
-          </div>
-        )}
+        </div>
 
-      </div>
     </div>
-  );
-}
 
-// Helper Component for List Items
-function RequirementItem({ text }) {
-  return (
-    <div className="flex items-start gap-3 group cursor-default">
-      <div className="min-w-[20px] h-[20px] mt-0.5 bg-[#1C2C24] border border-[#00C250]/20 rounded-full flex items-center justify-center group-hover:bg-[#00C250]/20 transition-colors">
-        <Check className="w-3 h-3 text-[#00C250]" strokeWidth={4} />
-      </div>
-      <span className="text-[15px] text-gray-200 font-normal leading-snug">
-        {text}
-      </span>
-    </div>
-  );
-}
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // State Management
+        const state = {
+            step: 'checklist', // checklist, reviewing, loading_screen, success, configuration
+            isChecked: true
+        };
+
+        // DOM Elements
+        const screens = {
+            checklist: document.getElementById('screen-checklist'),
+            loading: document.getElementById('screen-loading'),
+            success: document.getElementById('screen-success'),
+            configuration: document.getElementById('screen-configuration')
+        };
+        const modals = {
+            reviewing: document.getElementById('modal-reviewing')
+        };
+        
+        const headerTitle = document.getElementById('header-title');
+        const backBtn = document.getElementById('back-btn');
+        const applyBtn = document.getElementById('apply-btn');
+        const termsContainer = document.getElementById('terms-container');
+        const termsCheckbox = document.getElementById('terms-checkbox');
+        const checkIcon = document.getElementById('check-icon');
+        const startEarningBtn = document.getElementById('start-earning-btn');
+        const configForm = document.getElementById('config-form');
+
+        // Functions
+        function updateUI() {
+            // Hide all screens first
+            Object.values(screens).forEach(el => el.classList.add('hidden'));
+            Object.values(modals).forEach(el => el.classList.add('hidden'));
+
+            // Navigation Header Logic
+            if (state.step === 'checklist') {
+                screens.checklist.classList.remove('hidden');
+                headerTitle.textContent = 'TikTok Shop';
+                backBtn.classList.add('opacity-0', 'pointer-events-none');
+            } else if (state.step === 'reviewing') {
+                screens.checklist.classList.remove('hidden');
+                modals.reviewing.classList.remove('hidden');
+                headerTitle.textContent = 'TikTok Shop';
+                backBtn.classList.add('opacity-0', 'pointer-events-none');
+            } else if (state.step === 'loading_screen') {
+                screens.loading.classList.remove('hidden');
+                headerTitle.textContent = 'TikTok Shop';
+                backBtn.classList.add('opacity-0', 'pointer-events-none');
+            } else if (state.step === 'success') {
+                screens.success.classList.remove('hidden');
+                headerTitle.textContent = 'TikTok Shop';
+                backBtn.classList.remove('opacity-0', 'pointer-events-none');
+            } else if (state.step === 'configuration') {
+                screens.configuration.classList.remove('hidden');
+                headerTitle.textContent = 'Configuration';
+                backBtn.classList.remove('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Event Listeners
+
+        // 1. Terms Checkbox Logic
+        termsContainer.addEventListener('click', () => {
+            state.isChecked = !state.isChecked;
+            
+            if (state.isChecked) {
+                termsCheckbox.classList.remove('border-gray-600', 'bg-transparent');
+                termsCheckbox.classList.add('border-[#FE2C55]', 'bg-[#FE2C55]');
+                checkIcon.classList.remove('hidden');
+                
+                applyBtn.disabled = false;
+                applyBtn.classList.remove('bg-gray-800', 'cursor-not-allowed', 'text-gray-500');
+                applyBtn.classList.add('bg-[#FE2C55]', 'hover:opacity-90', 'shadow-[0_0_15px_rgba(254,44,85,0.3)]');
+            } else {
+                termsCheckbox.classList.remove('border-[#FE2C55]', 'bg-[#FE2C55]');
+                termsCheckbox.classList.add('border-gray-600', 'bg-transparent');
+                checkIcon.classList.add('hidden');
+                
+                applyBtn.disabled = true;
+                applyBtn.classList.add('bg-gray-800', 'cursor-not-allowed', 'text-gray-500');
+                applyBtn.classList.remove('bg-[#FE2C55]', 'hover:opacity-90', 'shadow-[0_0_15px_rgba(254,44,85,0.3)]');
+            }
+        });
+
+        // 2. Apply Button Logic (Flow Sequence)
+        applyBtn.addEventListener('click', () => {
+            if (!state.isChecked) return;
+
+            // Step 1: Reviewing
+            state.step = 'reviewing';
+            updateUI();
+
+            // Step 2: Loading (after 1.5s)
+            setTimeout(() => {
+                state.step = 'loading_screen';
+                updateUI();
+            }, 1500);
+
+            // Step 3: Success (after another 2s)
+            setTimeout(() => {
+                state.step = 'success';
+                updateUI();
+            }, 3500);
+        });
+
+        // 3. Start Earning Button
+        startEarningBtn.addEventListener('click', () => {
+            state.step = 'configuration';
+            updateUI();
+        });
+
+        // 4. Back Button Logic
+        backBtn.addEventListener('click', () => {
+            if (state.step === 'configuration') {
+                state.step = 'success';
+            } else if (state.step === 'success') {
+                state.step = 'checklist';
+            }
+            updateUI();
+        });
+
+        // 5. Configuration Form Submit
+        configForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('input-name').value;
+            
+            // Demo alert
+            alert(`Configuration Submitted for ${name}!`);
+            
+            // Reset to Success screen (demo loop)
+            state.step = 'success';
+            updateUI();
+        });
+
+        // Initial Render
+        updateUI();
+
+    </script>
+</body>
+</html>
